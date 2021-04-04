@@ -1,5 +1,3 @@
-#  Copyright (c) 2020. Lena "Teekeks" During <info@teawork.de>
-"""
 The Twitch API client
 ---------------------
 
@@ -597,6 +595,26 @@ class Twitch:
         response = self.__api_get_request(url, AuthType.USER, [AuthScope.BITS_READ])
         data = response.json()
         return make_fields_datetime(data, ['ended_at', 'started_at'])
+
+    def get_followed_streams(self,
+                               stream_type: str = "live",
+                               limit: int=25,
+                               offset: int=0
+                               ) -> dict:
+        if limit > 100 or limit < 1:
+            raise ValueError("limit must be between 1 and 100")
+        if offset < 0 or offset > 900:
+            raise ValueError("offset must be between 0 and 900")
+        url_param = {
+                'stream_type': stream_type,
+                'limit': limit,
+                'offset': offset
+                }
+        url = build_url(TWITCH_API_BASE_URL + 'streams/followed', url_params, remove_none=True)
+        result = self.__api_get_request(url, AuthType.EITHER, [])
+        return = result.json()
+
+
 
     def get_extension_transactions(self,
                                    extension_id: str,
